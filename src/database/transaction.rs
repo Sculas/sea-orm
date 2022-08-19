@@ -3,7 +3,7 @@ use crate::{
     Statement, StreamTrait, TransactionStream, TransactionTrait,
 };
 #[cfg(feature = "sqlx-dep")]
-use crate::{sqlx_error_to_exec_err, sqlx_error_to_query_err};
+use crate::{sqlx_error_to_exec_err, sqlx_error_to_db_err};
 use futures::lock::Mutex;
 #[cfg(feature = "sqlx-dep")]
 use sqlx::{pool::PoolConnection, TransactionManager};
@@ -98,19 +98,19 @@ impl DatabaseTransaction {
             InnerConnection::MySql(ref mut c) => {
                 <sqlx::MySql as sqlx::Database>::TransactionManager::begin(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-postgres")]
             InnerConnection::Postgres(ref mut c) => {
                 <sqlx::Postgres as sqlx::Database>::TransactionManager::begin(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-sqlite")]
             InnerConnection::Sqlite(ref mut c) => {
                 <sqlx::Sqlite as sqlx::Database>::TransactionManager::begin(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "mock")]
             InnerConnection::Mock(ref mut c) => {
@@ -153,19 +153,19 @@ impl DatabaseTransaction {
             InnerConnection::MySql(ref mut c) => {
                 <sqlx::MySql as sqlx::Database>::TransactionManager::commit(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-postgres")]
             InnerConnection::Postgres(ref mut c) => {
                 <sqlx::Postgres as sqlx::Database>::TransactionManager::commit(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-sqlite")]
             InnerConnection::Sqlite(ref mut c) => {
                 <sqlx::Sqlite as sqlx::Database>::TransactionManager::commit(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "mock")]
             InnerConnection::Mock(ref mut c) => {
@@ -185,19 +185,19 @@ impl DatabaseTransaction {
             InnerConnection::MySql(ref mut c) => {
                 <sqlx::MySql as sqlx::Database>::TransactionManager::rollback(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-postgres")]
             InnerConnection::Postgres(ref mut c) => {
                 <sqlx::Postgres as sqlx::Database>::TransactionManager::rollback(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "sqlx-sqlite")]
             InnerConnection::Sqlite(ref mut c) => {
                 <sqlx::Sqlite as sqlx::Database>::TransactionManager::rollback(c)
                     .await
-                    .map_err(sqlx_error_to_query_err)?
+                    .map_err(sqlx_error_to_db_err)?
             }
             #[cfg(feature = "mock")]
             InnerConnection::Mock(ref mut c) => {
@@ -319,7 +319,7 @@ impl ConnectionTrait for DatabaseTransaction {
         if let Err(sqlx::Error::RowNotFound) = _res {
             Ok(None)
         } else {
-            _res.map_err(sqlx_error_to_query_err)
+            _res.map_err(sqlx_error_to_db_err)
         }
     }
 
@@ -359,7 +359,7 @@ impl ConnectionTrait for DatabaseTransaction {
             _ => unreachable!(),
         };
         #[cfg(feature = "sqlx-dep")]
-        _res.map_err(sqlx_error_to_query_err)
+        _res.map_err(sqlx_error_to_db_err)
     }
 }
 

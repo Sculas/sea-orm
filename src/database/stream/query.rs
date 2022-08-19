@@ -130,7 +130,7 @@ impl QueryStream {
                     let stream = c
                         .fetch(query)
                         .map_ok(Into::into)
-                        .map_err(crate::sqlx_error_to_query_err);
+                        .map_err(crate::sqlx_error_to_db_err);
                     let elapsed = _start.map(|s| s.elapsed().unwrap_or_default());
                     MetricStream::new(_metric_callback, stmt, elapsed, stream)
                 }
@@ -141,7 +141,7 @@ impl QueryStream {
                     let stream = c
                         .fetch(query)
                         .map_ok(Into::into)
-                        .map_err(crate::sqlx_error_to_query_err);
+                        .map_err(crate::sqlx_error_to_db_err);
                     let elapsed = _start.map(|s| s.elapsed().unwrap_or_default());
                     MetricStream::new(_metric_callback, stmt, elapsed, stream)
                 }
@@ -152,7 +152,7 @@ impl QueryStream {
                     let stream = c
                         .fetch(query)
                         .map_ok(Into::into)
-                        .map_err(crate::sqlx_error_to_query_err);
+                        .map_err(crate::sqlx_error_to_db_err);
                     let elapsed = _start.map(|s| s.elapsed().unwrap_or_default());
                     MetricStream::new(_metric_callback, stmt, elapsed, stream)
                 }

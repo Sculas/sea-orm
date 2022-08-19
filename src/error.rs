@@ -17,6 +17,9 @@ pub enum DbErr {
     Json(String),
     /// A migration error
     Migration(String),
+    /// A sqlx error
+    #[cfg(feature = "sqlx-dep")]
+    Sqlx(sqlx::Error),
 }
 
 impl std::error::Error for DbErr {}
@@ -32,6 +35,8 @@ impl std::fmt::Display for DbErr {
             Self::Type(s) => write!(f, "Type Error: {}", s),
             Self::Json(s) => write!(f, "Json Error: {}", s),
             Self::Migration(s) => write!(f, "Migration Error: {}", s),
+            #[cfg(feature = "sqlx-dep")]
+            Self::Sqlx(s) => write!(f, "Sqlx Error: {}", s.to_string()),
         }
     }
 }

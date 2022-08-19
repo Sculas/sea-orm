@@ -114,7 +114,7 @@ impl SqlxSqlitePoolConnection {
                     Ok(row) => Ok(Some(row.into())),
                     Err(err) => match err {
                         sqlx::Error::RowNotFound => Ok(None),
-                        _ => Err(DbErr::Query(err.to_string())),
+                        _ => Err(DbErr::Sqlx(err)),
                     },
                 }
             })
@@ -135,7 +135,7 @@ impl SqlxSqlitePoolConnection {
             crate::metric::metric!(self.metric_callback, &stmt, {
                 match query.fetch_all(conn).await {
                     Ok(rows) => Ok(rows.into_iter().map(|r| r.into()).collect()),
-                    Err(err) => Err(sqlx_error_to_query_err(err)),
+                    Err(err) => Err(sqlx_error_to_db_err(err)),
                 }
             })
         } else {
