@@ -55,10 +55,11 @@ on:
   push:
     branches:
       - master
-      - 0.2.x
+      - 0.*.x
+      - pr/**/ci
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref || github.run_id }}
   cancel-in-progress: true
 
 env:
@@ -404,6 +405,15 @@ jobs:
           command: test
           args: >
             --manifest-path ${{ matrix.path }}
+
+      - name: Run mock test if it is core crate
+        uses: actions-rs/cargo@v1
+        if: ${{ contains(matrix.path, 'core/Cargo.toml') }}
+        with:
+          command: test
+          args: >
+            --manifest-path ${{ matrix.path }}
+            --features mock
 
       - name: check rustfmt
         run: |

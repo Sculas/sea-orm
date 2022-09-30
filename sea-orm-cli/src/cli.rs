@@ -25,7 +25,11 @@ pub enum Commands {
             global = true,
             short = 'd',
             long,
-            help = "Migration script directory",
+            help = "Migration script directory.
+If your migrations are in their own crate,
+you can provide the root of that crate.
+If your migrations are in a submodule of your app,
+you should provide the directory of that submodule.",
             default_value = "./migration"
         )]
         migration_dir: String,
@@ -48,6 +52,14 @@ pub enum MigrateSubcommands {
             help = "Name of the new migration"
         )]
         migration_name: String,
+
+        #[clap(
+            action,
+            short,
+            long,
+            help = "Generate migration file based on Utc time instead of Local time"
+        )]
+        universal_time: bool,
     },
     #[clap(about = "Drop all tables from the database, then reapply all migrations")]
     Fresh,
@@ -163,7 +175,7 @@ pub enum GenerateSubcommands {
             value_parser,
             long,
             default_value = "none",
-            help = "Automatically derive serde Serialize / Deserialize traits for the entity (none,\
+            help = "Automatically derive serde Serialize / Deserialize traits for the entity (none, \
                 serialize, deserialize, both)"
         )]
         with_serde: String,
@@ -173,7 +185,7 @@ pub enum GenerateSubcommands {
             long,
             default_value = "false",
             long_help = "Automatically derive the Copy trait on generated enums.\n\
-            Enums generated from a database don't have associated data by default, and as such can\
+            Enums generated from a database don't have associated data by default, and as such can \
             derive Copy.
             "
         )]
@@ -187,6 +199,15 @@ pub enum GenerateSubcommands {
             help = "The datetime crate to use for generating entities."
         )]
         date_time_crate: DateTimeCrate,
+
+        #[clap(
+            action,
+            long,
+            short = 'l',
+            default_value = "false",
+            help = "Generate index file as `lib.rs` instead of `mod.rs`."
+        )]
+        lib: bool,
     },
 }
 
